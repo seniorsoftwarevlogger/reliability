@@ -1,0 +1,170 @@
+#########################################################
+# Common Environment variables ConfigMap
+#########################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-env
+data:
+  NAMESPACE: ""
+  LOGLEVEL: info
+  SERVICEDIR: services
+  TRANSPORTER: nats://nats:4222
+
+---
+#########################################################
+# Service for Moleculer API Gateway service
+#########################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3030'
+    filter.by.port.name: 'true'
+spec:
+  selector:
+    app: api
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+    - name: metrics-prometheus
+      targetPort: 3030
+      port: 3030
+      protocol: TCP
+---
+#########################################################
+# Ingress for Moleculer API Gateway
+#########################################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3000
+
+---
+#########################################################
+# API Gateway service
+#########################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: seniorsoftwarevlogger/reliability-services:1679694717
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: common-env
+          env:
+            - name: SERVICES
+              value: api
+
+---
+#########################################################
+# Greeter service
+#########################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resources
+spec:
+  selector:
+    matchLabels:
+      app: resources
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: resources
+    spec:
+      containers:
+        - name: resources
+          image: seniorsoftwarevlogger/reliability-services:1679694717
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: common-env
+          env:
+            - name: SERVICES
+              value: resources
+
+---
+#########################################################
+# Conferences service
+#########################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conferences
+spec:
+  selector:
+    matchLabels:
+      app: conferences
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: conferences
+    spec:
+      containers:
+        - name: conferences
+          image: seniorsoftwarevlogger/reliability-services:1679694717
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: common-env
+          env:
+            - name: SERVICES
+              value: conferences
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-conferences
+spec:
+  selector:
+    matchLabels:
+      app: db-conferences
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db-conferences
+    spec:
+      containers:
+        - name: db-conferences
+          image: seniorsoftwarevlogger/reliability-services:1679694717
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: common-env
+          env:
+            - name: SERVICES
+              value: db-conferences

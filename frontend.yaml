@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app.kubernetes.io/name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: frontend
+    spec:
+      containers:
+        - name: reliability-frontend
+          image: seniorsoftwarevlogger/reliability-frontend:1679694717
+          imagePullPolicy: Never # IMPORTANT
+          ports:
+            - containerPort: 3000
+              name: frontend-svc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app.kubernetes.io/name: frontend
+  ports:
+    - name: frontend-service-port
+      protocol: TCP
+      port: 80
+      targetPort: frontend-svc
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reliability-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
