@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: frontend
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: reliability-frontend
-          image: seniorsoftwarevlogger/reliability-frontend:1679694717
+          image: ssv/reliability-frontend:idemp-fixed
           imagePullPolicy: Never # IMPORTANT
           ports:
             - containerPort: 3000

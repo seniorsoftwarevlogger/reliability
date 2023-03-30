@@ -12,7 +12,7 @@ module.exports = {
 				path: "/list",
 			},
 			async handler(ctx) {
-				const cachedTickets = {
+				const ticketsCahce = {
 					techtrain: 777,
 					heisenbug: 777,
 					jpoint: 777,
@@ -28,9 +28,9 @@ module.exports = {
 				const tickets = await this.broker
 					.call("tickets.stats", ctx.params, {
 						retries: 1,
-						fallbackResponse: () => cachedTickets,
+						fallbackResponse: () => ticketsCahce,
 					})
-					.catch((err) => cachedTickets);
+					.catch(() => ticketsCahce);
 
 				return {
 					...conferences,

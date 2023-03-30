@@ -1,8 +1,6 @@
-timestamp = $(shell date +%s)
-chaostoken:
+chaosmesh:
 	kubectl create token account-cluster-manager-ugbmq
 prune:
 	minikube ssh -- docker system prune
-build: $(timestamp)
-	docker build -t seniorsoftwarevlogger/reliability-frontend:$(timestamp) ./frontend
-	minikube image load seniorsoftwarevlogger/reliability-frontend:$(timestamp)
+grafana:
+	kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo

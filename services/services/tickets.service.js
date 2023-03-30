@@ -29,7 +29,7 @@ module.exports = {
 			async handler(ctx) {
 				if (
 					ctx.params.ticketsErrorRate &&
-					Math.random() > 1 - parseInt(ctx.params.ticketsErrorRate)
+					Math.random() > 1 - parseFloat(ctx.params.ticketsErrorRate)
 				)
 					throw new MoleculerRetryableError(
 						"Tickets stats service error",

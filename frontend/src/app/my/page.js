@@ -12,7 +12,7 @@ export default function Home() {
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
-    fetch(`http://${URL}/api/tickets/my`)
+    fetch(`${URL}/api/tickets/my`)
       .then((response) => response.json())
       .then((data) => setTickets(data.rows));
   }, []);

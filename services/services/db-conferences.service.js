@@ -20,9 +20,11 @@ module.exports = {
 	hooks: {
 		before: {
 			list(ctx) {
+				console.log("db-conferences.retry");
+
 				if (
 					ctx.params.dbErrorRate &&
-					Math.random() > 1 - parseInt(ctx.params.dbErrorRate)
+					Math.random() > 1 - parseFloat(ctx.params.dbErrorRate)
 				)
 					throw new MoleculerRetryableError(
 						"DB Error",

@@ -20,9 +20,9 @@ kind: Service
 metadata:
   name: api
   annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: '3030'
-    filter.by.port.name: 'true'
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3030"
+    filter.by.port.name: "true"
 spec:
   selector:
     app: api
@@ -77,7 +77,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: seniorsoftwarevlogger/reliability-services:1679694717
+          image: ssv/reliability-services:idemp-fixed
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -93,27 +93,27 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: resources
+  name: tickets
 spec:
   selector:
     matchLabels:
-      app: resources
+      app: tickets
   replicas: 1
   template:
     metadata:
       labels:
-        app: resources
+        app: tickets
     spec:
       containers:
-        - name: resources
-          image: seniorsoftwarevlogger/reliability-services:1679694717
+        - name: tickets
+          image: ssv/reliability-services:idemp-fixed
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: common-env
           env:
             - name: SERVICES
-              value: resources
+              value: tickets
 
 ---
 #########################################################
@@ -135,7 +135,7 @@ spec:
     spec:
       containers:
         - name: conferences
-          image: seniorsoftwarevlogger/reliability-services:1679694717
+          image: ssv/reliability-services:idemp-fixed
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -144,6 +144,7 @@ spec:
             - name: SERVICES
               value: conferences
 
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -160,7 +161,7 @@ spec:
     spec:
       containers:
         - name: db-conferences
-          image: seniorsoftwarevlogger/reliability-services:1679694717
+          image: ssv/reliability-services:idemp-fixed
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -168,3 +169,29 @@ spec:
           env:
             - name: SERVICES
               value: db-conferences
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-tickets
+spec:
+  selector:
+    matchLabels:
+      app: db-tickets
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db-tickets
+    spec:
+      containers:
+        - name: db-tickets
+          image: ssv/reliability-services:idemp-fixed
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: common-env
+          env:
+            - name: SERVICES
+              value: db-tickets

@@ -17,7 +17,7 @@ export default function Home() {
     if (!serializedErrors) {
       localStorage.setItem(
         "chaosErrors",
-        "dbTicketsDelay=3000&dbErrorRate=0&ticketsErrorRate=0"
+        "dbTicketsDelay=3000&dbErrorRate=0.5&ticketsErrorRate=0"
       );
     }
   }, []);
@@ -47,14 +47,14 @@ export default function Home() {
 }
 
 function buyTicket(slug) {
-  const idempotencyKey = new Uint32Array(2);
-  window.crypto.getRandomValues(idempotencyKey);
-
   const serializedErrors = localStorage.getItem("chaosErrors");
+
   return fetch(`${URL}/api/tickets/buy?${serializedErrors}`, {
     headers: {
       "Content-type": "application/json; charset=UTF-8",
-      "idempotency-key": idempotencyKey.join("-"),
+      "idempotency-key":
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15),
     },
     method: "POST",
     body: JSON.stringify({ slug }),
